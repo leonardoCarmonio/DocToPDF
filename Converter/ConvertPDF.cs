@@ -2,14 +2,14 @@ using Spire.Doc;
 
 public static class ConvertPDF
 {
-    public static void Convert(string fileName)
+    public static void Convert(string filePath)
     {
         try
         {
             var document = new Document();
-            document.LoadFromFile(fileName);
+            document.LoadFromFile(filePath);
 
-            string filePdf = Path.ChangeExtension(fileName, ".pdf");
+            string filePdf = Path.ChangeExtension(filePath, ".pdf");
             document.SaveToFile(filePdf, FileFormat.PDF);
         }
         catch (Exception exception)
