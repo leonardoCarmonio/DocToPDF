@@ -4,18 +4,25 @@ using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUploadServices, UploadService>();
+builder.Services.AddScoped<ISendMessage, SendMessage>();
 
 var app = builder.Build();
 
-app.MapPost("/upload", async ([FromForm] IFormFile file, 
-                              [FromServices] IUploadServices uploadServices) =>
-{
-    var uploadResult = await uploadServices.UploadDocument(file);
+app.UseStaticFiles();
 
-    if (uploadResult.statusCode is HttpStatusCode.OK)
+app.MapPost("/upload", async ([FromForm] IFormFile file, 
+                              [FromServices] IUploadServices uploadServices,
+                              [FromServices] ISendMessage sendMessage) =>
+{
+    var uploadResult = await uploadServices.UploadDocument(file, builder.Environment);
+
+    if (uploadResult.StatusCode is HttpStatusCode.OK) 
+    {
+        sendMessage.Send(uploadResult.FileName);
         return Results.Ok(uploadResult);
+    }
     else
-        return Results.Problem(title: uploadResult.Message, statusCode: (int)uploadResult.statusCode);
+        return Results.Problem(title: uploadResult.Message, statusCode: (int)uploadResult.StatusCode);
 
 }).DisableAntiforgery();
 

@@ -5,34 +5,54 @@ using Web.Models;
 namespace Web.Services;
 public class UploadService : IUploadServices
 {
-    public async Task<UploadResult> UploadDocument(IFormFile file)
+    public async Task<UploadResult> UploadDocument(IFormFile file, IWebHostEnvironment webHostEnvironment)
     {
-        var allowedExtensions = new string[]
-        {
-            ".doc",
-            ".docx",
-            ".odt"
-        };
+        var allowedExtensions = new string[] { ".doc",".docx",".odt" };
 
         var fileInfo = new FileInfo(file.FileName);
 
         if (!allowedExtensions.Contains(fileInfo.Extension))
-            return new UploadResult(IsSuccess: false, Message: "Extensão não permitida.", statusCode: HttpStatusCode.BadRequest);
+        {
+            return new UploadResult(
+                IsSuccess: false,
+                Message: "Extensão não permitida.",
+                StatusCode: HttpStatusCode.BadRequest,
+                FileName: string.Empty);
+        }
 
-        string newFileName = $"uploads/{DateTime.Now.Ticks}{fileInfo.Extension}";
+        string fileName = Path.Combine("pdf",$"{DateTime.Now.Ticks}{fileInfo.Extension}");
+        string filePath = Path.Combine(webHostEnvironment.WebRootPath,fileName);
 
         try
         {
-            await file.CopyToAsync(File.OpenWrite(newFileName));
-            return new UploadResult(IsSuccess: true, Message: "Upload realizado com sucesso", statusCode: HttpStatusCode.OK);
+            using var fileStream = File.Open(filePath,
+                                             FileMode.Create,
+                                             FileAccess.Write,
+                                             FileShare.ReadWrite);
+
+            await file.CopyToAsync(fileStream);
+
+            return new UploadResult(
+                IsSuccess: true, 
+                Message: "Upload realizado com sucesso", 
+                StatusCode: HttpStatusCode.OK, 
+                fileName);
         }
         catch (UnauthorizedAccessException)
         {
-            return new UploadResult(IsSuccess: false, Message: "Diretório de upload não autorizado.", statusCode: HttpStatusCode.InternalServerError);
+            return new UploadResult(
+                IsSuccess: false, 
+                Message: "Diretório de upload não autorizado.", 
+                StatusCode: HttpStatusCode.InternalServerError, 
+                FileName: string.Empty);
         }
         catch (Exception)
         {
-            return new UploadResult(IsSuccess: false, Message: "Erro ao fazer upload para o diretório.", statusCode: HttpStatusCode.InternalServerError);
+            return new UploadResult(
+                IsSuccess: false, 
+                Message: "Erro ao fazer upload para o diretório.", 
+                StatusCode: HttpStatusCode.InternalServerError, 
+                FileName: string.Empty);
         }
     }
 }
