@@ -1,6 +1,7 @@
 
 using System.Net;
 using Web.Models;
+using Web.Services.Interfaces;
 
 namespace Web.Services;
 public class UploadService : IUploadServices

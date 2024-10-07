@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
+using Web.Services.Interfaces;
 
 namespace Web.Services;
 

@@ -1,6 +1,6 @@
 using Web.Models;
 
-namespace Web.Services;
+namespace Web.Services.Interfaces;
 
 public interface IUploadServices
 {
