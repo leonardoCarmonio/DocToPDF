@@ -11,7 +11,14 @@ services:
       - rabbitmq_log:/var/log/rabbitmq
     networks:
       - rabbitmq_network
-
+  front:
+    image: nginx:1-alpine
+    container_name: "nginx"
+    ports:
+      - "8085:80"
+    volumes:
+      - './Front/:/var/www/html'
+      - './Front/Config/default.conf/:/etc/nginx/conf.d/default.conf'
 volumes:
   rabbitmq_data:
   rabbitmq_log:

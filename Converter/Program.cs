@@ -8,7 +8,7 @@ var connection = factory.CreateConnection();
 using var channel = connection.CreateModel();
 
 const string queueName = "convertPDF";
-const string directory = @"C:\Users\Leonardo\Documents\Pessoal\Projetos\DocToPDF\web\wwwroot\";
+const string directory = @"C:\Projetos\DocToPDF\web\wwwroot\";
 
 channel.QueueDeclare(queueName, exclusive: false);
 
