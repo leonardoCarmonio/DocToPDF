@@ -46,11 +46,11 @@ public class UploadService : IUploadServices
                 StatusCode: HttpStatusCode.InternalServerError, 
                 FileName: string.Empty);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             return new UploadResult(
                 IsSuccess: false, 
-                Message: "Erro ao fazer upload para o diretório.", 
+                Message: $"Erro ao fazer upload para o diretório. Detalhes = {e.Message}", 
                 StatusCode: HttpStatusCode.InternalServerError, 
                 FileName: string.Empty);
         }

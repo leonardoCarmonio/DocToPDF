@@ -6,9 +6,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUploadServices, UploadService>();
 builder.Services.AddScoped<ISendMessage, SendMessage>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "CorsPolicy",
+                        builder =>
+                        {
+                            builder.WithOrigins(["http://localhost:8085"])
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials();
+                        });
+});
+
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
+
 app.UseStaticFiles();
+
 
 app.MapPost("/upload", async ([FromForm] IFormFile file, 
                               [FromServices] IUploadServices uploadServices,
